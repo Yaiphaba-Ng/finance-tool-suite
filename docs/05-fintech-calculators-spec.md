@@ -1,6 +1,6 @@
 # 5. Calculators 
 
-## 5.1 Business Rules & Usage Matrix
+## 5.1 Configurable Parameters
 
 | Calculator | End-User Inputs | Admin-Defined Constraints | Results |
 | :--- | :--- | :--- | :--- |
@@ -12,7 +12,7 @@
 
 ---
 
-## 5.2 Formulas & Logic
+## 5.2 Formulas
 
 ### 1. SIP & Lumpsum
 - **SIP:** $FV = P \cdot \frac{(1 + i)^n - 1}{i} \cdot (1 + i)$
@@ -34,7 +34,7 @@
 
 ## 5.3 Implementation Requirements
 
-| Parameter | End-User Control | Rationale |
+| Parameter | End-User Control | Execution  |
 | :--- | :--- | :--- |
 | **Amount** | Slider + Masked Input | Balance of precision and speed. |
 | **Returns (%)** | Slider (0.5% steps) | Based on Admin-set defaults. |
@@ -42,5 +42,5 @@
 | **Currency** | Masked Text (₹) | Indian Rupee (Lakhs/Crores). |
 
 ### Technical Notes
-- **Math:** Resides in `frontend/utils/math.ts` for zero-latency.
+- **Math:** Resides in `frontend/utils/math.ts` for low latency.
 - **Config:** App must fetch Admin bounds from `/api/v1/config` on startup.
