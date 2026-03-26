@@ -1,9 +1,9 @@
-# 3. Reference Data Models & Entities
+# 3. Reference Data Models
 
-This document outlines the conceptual data models the application will interact with. All endpoints will return/accept JSON based on these representations.
+Core entities for the application.
 
-## 3.1 User Entity
-Represents an authenticated user within the system. Focus is on capturing demographic info for lead generation.
+## 3.1 User
+Authenticated user within the system. Focus: lead generation.
 
 ```json
 {
@@ -16,19 +16,19 @@ Represents an authenticated user within the system. Focus is on capturing demogr
 }
 ```
 
-## 3.2 Lead Entity
-Represents a generated lead (either generic from a calculator context or specific from an enquiry form).
+## 3.2 Lead
+Generated lead from calculator or enquiry form.
 
 ```json
 {
   "id": "uuid",
-  "user_id": "uuid (optional if guest)",
+  "user_id": "uuid (optional)",
   "guest_name": "John",
   "guest_phone": "123456789",
   "type": "PL | BL | Currency | Calculator_Drop",
   "details": {
-    "loan_amount": 500000,
-    "tenure_months": 36,
+    "amount": 500000,
+    "tenure": 36,
     "employment": "Salaried"
   },
   "status": "New | Contacted | Converted",
@@ -36,8 +36,8 @@ Represents a generated lead (either generic from a calculator context or specifi
 }
 ```
 
-## 3.3 Financial Goal Entity
-A saved goal predicting required SIP steps.
+## 3.3 Financial Goal
+Saved goal predicting required SIP.
 
 ```json
 {

@@ -1,8 +1,11 @@
-# Gemini Project Instructions & Guidelines
+# Project Guidelines
 
-This file contains project-specific instructions, conventions, and guidelines established during interactions for The Application.
+## Documentation Standards
+- **Cleanliness:** All documentation must be concise, high-signal, and professional. Remove conversational filler, redundant introductions, and "fluff."
+- **Naming:** Do not use the name "Seldex" or "Seldex Phase 1." Use generic terms instead.
+- **Formatting:** Prefer tabular summaries and clear, distinct headers. Use formal mathematical notation for formulas.
 
-## Rules
-- Do not run the linter automatically after completing a task.
-- Always refer to the `docs/` directory and keep all documentation up-to-date with code or requirement changes.
-- Never execute git commands automatically.
+## Development Standards
+- **Linter:** Do not run the linter automatically after completing a task.
+- **Math Logic:** Maintain all financial formulas in `frontend/utils/math.ts`.
+- **UI Components:** Adhere to established UI components and the "Slate & Emerald" theme.

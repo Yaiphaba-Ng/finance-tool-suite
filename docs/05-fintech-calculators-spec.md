@@ -1,74 +1,46 @@
-# 5. Fintech Calculators & Mathematical Specification
+# 5. Calculators 
 
-This document defines the mathematical core and dual-interface requirements for the financial calculator suite.
+## 5.1 Business Rules & Usage Matrix
 
-## 5.1 Executive Summary Table (Master Configuration)
-
-This table serves as the definitive guide for the **Fintech Service Provider (Client)** to define business rules and for the development team to implement validation logic.
-
-| Calculator | Admin Configurable Parameters | Value Ranges (Min / Max / Step) | Key Output / Visuals |
+| Calculator | End-User Inputs | Admin-Defined Constraints | Results |
 | :--- | :--- | :--- | :--- |
-| **SIP** | Monthly Investment, Returns (%), Tenure (Yrs) | ₹500 / ₹10L / ₹500 <br> 1% / 30% / 0.1% <br> 1 / 40 / 1 | Maturity Value, Invested vs Returns Chart |
-| **Lumpsum** | Principal, Returns (%), Tenure (Yrs) | ₹1K / ₹1Cr / ₹1K <br> 1% / 30% / 0.1% <br> 1 / 40 / 1 | Maturity Value, Total Wealth Growth |
-| **SIP Step-Up** | Initial Monthly, Annual Step-Up (%), Returns, Tenure | Step-Up: 1% / 50% / 1% <br> Others same as SIP | Impact of annual increments on wealth |
-| **SIP Delay** | Monthly Investment, Delay (Months), Returns, Tenure | Delay: 1 / 120 / 1 Month <br> Others same as SIP | "Cost of Procrastination" (Total Loss) |
-| **SIP Planner** | Target Goal (₹), Tenure, Inflation (%), Returns (%) | Target: ₹10K / ₹10Cr / ₹10K <br> Inflation: 0% / 15% / 1% | Required Monthly SIP to reach goal |
+| **SIP** | Monthly Deposit<br> Returns (%)<br> Duration (Years) | **Bounds:** ₹500 to ₹10L (Step: ₹500) <br> **Returns:** 1% to 30% <br> **Tenure:** Max 40 Years | Maturity Value<br> Invested vs Profit |
+| **Lumpsum** | One-time Principal<br> Returns (%)<br> Duration (Years) | **Bounds:** ₹1K to ₹1Cr (Step: ₹1K) <br> **Returns:** 1% to 30% <br> **Tenure:** Max 40 Years | Maturity Value<br> Growth |
+| **SIP Step-Up** | Initial Monthly<br> Annual Step-Up (%)<br> Returns, Tenure | **Step-Up:** 1% to 50% (Step: 1%) <br> **Other Bounds:** Same as SIP | Wealth with Hikes |
+| **SIP Delay** | Monthly SIP<br> Delay (Months)<br> Returns, Tenure | **Delay:** 1 to 120 Months <br> **Other Bounds:** Same as SIP | Total Lost Wealth |
+| **SIP Planner** | Target Goal (₹)<br> Time to Goal<br> Inflation (%) | **Target:** ₹10K to ₹10Cr <br> **Inflation:** 6% Base <br> **Tenure:** Max 40 Years | Required SIP |
 
 ---
 
-## 5.2 Access Control & Role Definition
+## 5.2 Formulas & Logic
 
-To ensure the application remains adaptable for the **Fintech Service Provider**, the architecture distinguishes between configuration and consumption:
+### 1. SIP & Lumpsum
+- **SIP:** $FV = P \cdot \frac{(1 + i)^n - 1}{i} \cdot (1 + i)$
+- **Lumpsum:** $FV = P \cdot (1 + r)^n$
 
-1.  **Admin (Client - Fintech Provider):**
-    *   **Access:** Backend Admin Dashboard / Configuration API.
-    *   **Control:** Defines the "Bounds of Play" (Min, Max, Step) and "Default Values" for all sliders and inputs.
-    *   **Goal:** Control risk and steer customer expectations based on market conditions.
+### 2. SIP Step-Up
+- $FV = \sum_{y=1}^{Y} \left[ P \cdot (1 + s)^{y-1} \cdot \frac{(1 + i)^{12} - 1}{i} \cdot (1 + i) \cdot (1 + i)^{12(Y-y)} \right]$
+*(s = step-up rate, Y = years)*
 
-2.  **End-User (Customer):**
-    *   **Access:** Mobile Application.
-    *   **Control:** Interacts with the calculator interface *within* the constraints set by the Admin.
-    *   **Goal:** Plan investments and submit high-intent leads.
+### 3. SIP Delay Cost
+- $Cost = FV_{Immediate} - FV_{Delayed}$
+*(Delayed uses $n = (TotalY - DelayY) \cdot 12$)*
 
----
-
-## 5.3 Interface Matrix per Calculator Type
-
-### 1. SIP & Lumpsum Calculators
-| Interface | Controls & Visibility | Description |
-| :--- | :--- | :--- |
-| **Admin UI** | Input Fields for: `min_amount`, `max_amount`, `default_returns`, `max_tenure` | Sets the global boundaries for the customer. |
-| **End-User UI** | Interactive Sliders for: `Investment Amount`, `Expected Returns`, `Tenure` | Customer slides between the Admin-defined Min and Max. |
-
-### 2. SIP Step-Up Calculator
-| Interface | Controls & Visibility | Description |
-| :--- | :--- | :--- |
-| **Admin UI** | Toggle: `enable_stepup`, Input: `max_stepup_pct` | Enables the feature and caps the maximum allowed hike. |
-| **End-User UI** | Slider: `Annual Step-Up %`, Toggle: `Visualize Impact` | User calculates how salary hikes affect maturity. |
-
-### 3. SIP Delay Cost Calculator
-| Interface | Controls & Visibility | Description |
-| :--- | :--- | :--- |
-| **Admin UI** | Input: `default_delay_months`, `warning_threshold_amount` | Configures the default delay and when to highlight "Critical Loss". |
-| **End-User UI** | Slider: `Delay Period (Months)`, Red Alert Text | Visualizes the financial penalty of waiting. |
-
-### 4. SIP Planner (Goal-Based)
-| Interface | Controls & Visibility | Description |
-| :--- | :--- | :--- |
-| **Admin UI** | Config: `inflation_base_rate`, List: `goal_categories` (Home, Education, etc.) | Defines the standard inflation rate and available goals. |
-| **End-User UI** | Goal Category Selector, Target Amount Input, Inflation Toggle | Finds the monthly commitment needed for a specific life goal. |
+### 4. SIP Planner
+- $P = \frac{FV_{Target} \cdot i}{((1 + i)^n - 1) \cdot (1 + i)}$
+*(Target adjusted for inflation: $FV_{Target} = PV \cdot (1 + f)^n$)*
 
 ---
 
-## 5.4 UI/UX Configuration Matrix (Global Styling)
+## 5.3 Implementation Requirements
 
-| Parameter | End-User UI Control | Rationale |
+| Parameter | End-User Control | Rationale |
 | :--- | :--- | :--- |
-| **Amount** | Slider + Masked Input | Balance between precision and ease of use. |
-| **Returns (%)** | Slider (0.5% steps) | Historical equity average (Admin set) is the starting point. |
-| **Tenure** | Slider + Year Chips | Quick selection of 5Y, 10Y, 15Y presets. |
-| **Currency** | Masked Text (₹) | Localized Indian Rupee formatting (Lakhs/Crores). |
+| **Amount** | Slider + Masked Input | Balance of precision and speed. |
+| **Returns (%)** | Slider (0.5% steps) | Based on Admin-set defaults. |
+| **Tenure** | Slider + Year Chips | Quick 5Y, 10Y, 15Y selection. |
+| **Currency** | Masked Text (₹) | Indian Rupee (Lakhs/Crores). |
 
-## 5.5 Technical Implementation Note
-- **Zero-Latency:** All math logic MUST reside in `frontend/utils/math.ts`.
-- **Remote Config:** The Mobile app should fetch Admin-defined bounds (Min/Max/Step) from the `/api/v1/config` endpoint on startup to allow the Fintech Provider to update values without an app store release.
+### Technical Notes
+- **Math:** Resides in `frontend/utils/math.ts` for zero-latency.
+- **Config:** App must fetch Admin bounds from `/api/v1/config` on startup.
