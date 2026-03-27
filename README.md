@@ -1,4 +1,4 @@
-# Finance Tool Suit - Phase 1 (Android)
+# Finance Tool Suite - Phase 1 (Android)
 
 A high-performance Fintech application built with **React Native (Expo)** and **FastAPI**. It focuses on captured intent through interactive investment tools, loan enquiries, and real-time market data tracking.
 
