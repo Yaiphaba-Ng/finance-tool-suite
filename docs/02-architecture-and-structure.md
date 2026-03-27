@@ -8,6 +8,8 @@
 - **Backend:** FastAPI (Python), Postgres.
 
 ## 2.2 System Architecture
+![System Architecture](system_architecture.png)
+
 Mobile Client (React Native) -> REST API (FastAPI) -> Backend Services (Auth, DB, 3rd Party Finance APIs).
 
 ## 2.3 Repository Structure
